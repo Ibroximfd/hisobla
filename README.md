@@ -1,16 +1,36 @@
-# hisobla
+# Hisobla — Oylik Byudjetni Boshqarish Ilovasi
 
-A new Flutter project.
+> **"Har bir so‘mni hisoblang — moliyaviy erkinlik sari yo‘l!"**
 
-## Getting Started
+**Hisobla** — o‘zbek foydalanuvchilari uchun maxsus ishlab chiqilgan, oddiy va qulay **oylik byudjetni boshqarish** ilovasi. O‘z xarajatlarni nazorat qiling, byudjetni belgilang va moliyaviy intizomni saqlang!
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## Foydalanuvchi Interfeysi (Screenshots)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+| Asosiy ekran | Byudjet tahrirlash | Xarajat tarixi |
+|--------------|---------------------|------------------|
+| ![Main](assets/readme/screen_main.png) | ![Edit](assets/readme/screen_edit.png) | ![Add](assets/readme/screen_history.png) |
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## Xususiyatlar
+
+- **Oylik byudjetni belgilash** — boshida o‘zingiz uchun limit qo‘ying  
+- **Xarajatlarni qo‘shish** — har bir sarfni izoh bilan kiriting  
+- **Qoldiqni real vaqtda ko‘rish** — qancha pul qoldi?  
+- **Katta raqamlar uchun qulay formatlash** — `88 888 888 so‘m`  
+- **Responsiv dizayn** — barcha ekran o‘lchamlariga mos  
+- **Qorong‘i / Yorug‘ rejim** (kelajakda)  
+- **Ma'lumotlar saqlanishi** — `SharedPreferences` orqali  
+- **Flutter Bloc** — toza arxitektura  
+
+---
+
+## Texnologiyalar
+
+```text
+Flutter     - UI Framework
+Dart        - Dasturlash tili
+Flutter Bloc- State Management
+SharedPreferences - Ma'lumot saqlash
