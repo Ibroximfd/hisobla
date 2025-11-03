@@ -242,16 +242,21 @@ class ExpenseListFab extends StatelessWidget {
           ),
         );
       },
-      child: SizedBox(
+      child: Container(
         height: 60,
-        width: 60,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Colors.blue.shade600,
-            borderRadius: BorderRadius.all(Radius.circular(12)),
-          ),
-          child: const Icon(Icons.history, size: 30),
+        width: 68,
+        decoration: BoxDecoration(
+          color: Colors.blue.shade600,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue.withOpacity(0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
+        child: const Icon(Icons.history, size: 28),
       ),
     );
   }

@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hisobla/features/presentation/blocs/hisobla_bloc/hisobla_event.dart';
-import 'package:hisobla/features/presentation/pages/hisobla_calculator_page.dart';
+import 'package:hisobla/features/presentation/pages/settings_page.dart';
+import 'package:hisobla/features/presentation/pages/splash_page.dart';
 import 'core/di/injection.dart';
 import 'features/presentation/blocs/hisobla_bloc/hisobla_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent, // Status bar shaffof
+      statusBarIconBrightness: Brightness.light, // Iconlar oq (chunki fon ko‘k)
+      statusBarBrightness: Brightness.dark, // iOS uchun
+    ),
+  );
 
   // SharedPreferences bilan DI setup
   await setupDependencies();
@@ -22,13 +32,14 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (_) => getIt<BudgetBloc>()..add(LoadBudgetEvent()),
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Hisobla',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
           scaffoldBackgroundColor: const Color(0xFFF5F5F5),
         ),
-        home: const CalculatorPage(),
+        home: const SplashPage(),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hisobla/features/presentation/widgets/hisobla_expense_fab.dart';
 
 class CalculatorKeypad extends StatelessWidget {
   final Function(String) onNumberPressed;
@@ -18,51 +19,34 @@ class CalculatorKeypad extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          Expanded(
-            child: Row(
-              children: [
-                _buildButton('7'),
-                _buildButton('8'),
-                _buildButton('9'),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                _buildButton('4'),
-                _buildButton('5'),
-                _buildButton('6'),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                _buildButton('1'),
-                _buildButton('2'),
-                _buildButton('3'),
-              ],
-            ),
-          ),
+          // 7 8 9
+          _buildRow(['7', '8', '9']),
+          // 4 5 6
+          _buildRow(['4', '5', '6']),
+          // 1 2 3
+          _buildRow(['1', '2', '3']),
+          // 000 0 O'chirish
           Expanded(
             child: Row(
               children: [
                 _buildButton('000'),
                 _buildButton('0'),
-                _buildSpecialButton(
-                  'O\'chirish',
-                  Icons.backspace_outlined,
-                  Colors.orange,
-                  onClearPressed,
-                ),
+                _buildClearButton(), // Katta, qulay
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
+          // TAYYOR - Katta, markaziy
           _buildDoneButton(),
+          SizedBox(height: 40),
         ],
       ),
+    );
+  }
+
+  Widget _buildRow(List<String> texts) {
+    return Expanded(
+      child: Row(children: texts.map((t) => _buildButton(t)).toList()),
     );
   }
 
@@ -72,18 +56,19 @@ class CalculatorKeypad extends StatelessWidget {
         padding: const EdgeInsets.all(6),
         child: Material(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
+          elevation: 2,
           child: InkWell(
             onTap: () => onNumberPressed(text),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -91,7 +76,7 @@ class CalculatorKeypad extends StatelessWidget {
                 child: Text(
                   text,
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: text == '000' ? 22 : 30,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey.shade800,
                   ),
@@ -104,27 +89,39 @@ class CalculatorKeypad extends StatelessWidget {
     );
   }
 
-  Widget _buildSpecialButton(
-    String text,
-    IconData icon,
-    Color color,
-    VoidCallback onPressed,
-  ) {
+  Widget _buildClearButton() {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(6),
         child: Material(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
+          color: Colors.orange.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(20),
+          elevation: 3,
           child: InkWell(
-            onTap: onPressed,
-            borderRadius: BorderRadius.circular(16),
+            onTap: onClearPressed,
+            borderRadius: BorderRadius.circular(20),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.orange.withOpacity(0.4),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.orange.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-              child: Center(child: Icon(icon, color: color, size: 28)),
+              child: const Center(
+                child: Icon(
+                  Icons.backspace_outlined,
+                  color: Colors.orange,
+                  size: 32,
+                ),
+              ),
             ),
           ),
         ),
@@ -133,41 +130,54 @@ class CalculatorKeypad extends StatelessWidget {
   }
 
   Widget _buildDoneButton() {
-    return Container(
-      width: double.infinity,
-      height: 60,
-
-      margin: const EdgeInsets.only(left: 6, right: 80, top: 16),
-      child: Material(
-        color: Colors.green,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          onTap: onDonePressed,
-          borderRadius: BorderRadius.circular(16),
+    return Row(
+      children: [
+        Expanded(
           child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.green.withOpacity(0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: const Center(
-              child: Text(
-                'Hisoblash',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+            width: double.infinity,
+            height: 68,
+            margin: const EdgeInsets.symmetric(horizontal: 6),
+            child: Material(
+              color: Colors.green,
+              borderRadius: BorderRadius.circular(24),
+              elevation: 6,
+              child: InkWell(
+                onTap: onDonePressed,
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: LinearGradient(
+                      colors: [Colors.green.shade600, Colors.green.shade700],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.green.withOpacity(0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Tayyor',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
+        ExpenseListFab(),
+      ],
     );
   }
 }
