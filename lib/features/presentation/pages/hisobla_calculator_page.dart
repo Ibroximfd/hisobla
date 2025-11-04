@@ -118,7 +118,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
       } else {
         // Kirish: faqat byudjetni tahrirlash
         _isEditingBudget = true;
-        _displayValue = '0'; // yoki budget.totalBudget ni ko'rsatish mumkin
+        _displayValue = '0';
         _descriptionController.clear();
       }
     });
@@ -126,6 +126,37 @@ class _CalculatorPageState extends State<CalculatorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final bannerHeight = _isBannerAdLoaded && _bannerAd != null
+        ? _bannerAd!.size.height.toDouble()
+        : 0.0;
+
+    // Ekran balandligiga qarab flex qiymatlarini dinamik hisoblash
+    final availableHeight =
+        screenHeight - bannerHeight - MediaQuery.of(context).padding.top;
+
+    // Kichik ekranlar uchun (< 650px)
+    final isVerySmallScreen = availableHeight < 650;
+    // O'rta ekranlar uchun (650-750px)
+    final isSmallScreen = availableHeight >= 650 && availableHeight < 750;
+
+    int displayFlex;
+    int keypadFlex;
+
+    if (isVerySmallScreen) {
+      // Juda kichik ekranlar - keypad ko'proq joy oladi
+      displayFlex = 3;
+      keypadFlex = 7;
+    } else if (isSmallScreen) {
+      // O'rta ekranlar - muvozanatli
+      displayFlex = 4;
+      keypadFlex = 6;
+    } else {
+      // Katta ekranlar - display ko'proq joy oladi
+      displayFlex = 5;
+      keypadFlex = 5;
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: BlocBuilder<BudgetBloc, BudgetState>(
@@ -137,8 +168,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
           if (state is BudgetLoaded) {
             return Column(
               children: [
+                // Budget Display - moslashuvchan
                 Expanded(
-                  flex: MediaQuery.of(context).size.height < 700 ? 3 : 4,
+                  flex: displayFlex,
                   child: BudgetDisplay(
                     budget: state.budget,
                     displayValue: _displayValue,
@@ -153,20 +185,27 @@ class _CalculatorPageState extends State<CalculatorPage> {
                     },
                   ),
                 ),
+                // Keypad - moslashuvchan
                 Expanded(
-                  flex: MediaQuery.of(context).size.height < 700 ? 7 : 6,
-                  child: CalculatorKeypad(
-                    onNumberPressed: _onNumberPressed,
-                    onClearPressed: _onClearPressed,
-                    onDonePressed: _onDonePressed,
+                  flex: keypadFlex,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return CalculatorKeypad(
+                        onNumberPressed: _onNumberPressed,
+                        onClearPressed: _onClearPressed,
+                        onDonePressed: _onDonePressed,
+                        // Ekran balandligini keypad'ga uzatish
+                        availableHeight: constraints.maxHeight,
+                      );
+                    },
                   ),
                 ),
-                // Banner Reklama
+                // Banner Reklama - faqat kerak bo'lganda ko'rinadi
                 if (_isBannerAdLoaded && _bannerAd != null)
                   Container(
                     color: Colors.white,
-                    height: _bannerAd!.size.height.toDouble(),
-                    width: _bannerAd!.size.width.toDouble(),
+                    height: bannerHeight,
+                    width: double.infinity,
                     child: AdWidget(ad: _bannerAd!),
                   ),
               ],

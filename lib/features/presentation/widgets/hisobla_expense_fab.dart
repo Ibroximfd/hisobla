@@ -6,7 +6,16 @@ import 'package:hisobla/features/presentation/blocs/hisobla_bloc/hisobla_state.d
 import 'package:intl/intl.dart';
 
 class ExpenseListFab extends StatelessWidget {
-  const ExpenseListFab({super.key});
+  final double height;
+  final double width;
+  final bool isCompact;
+
+  const ExpenseListFab({
+    super.key,
+    this.height = 60,
+    this.width = 68,
+    this.isCompact = false,
+  });
 
   String _formatCurrency(double amount) {
     return amount
@@ -44,8 +53,8 @@ class ExpenseListFab extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(dialogContext); // Dialog yopish
-              Navigator.pop(context); // Bottom sheet yopish
+              Navigator.pop(dialogContext);
+              Navigator.pop(context);
               context.read<BudgetBloc>().add(DeleteAllExpensesEvent());
 
               ScaffoldMessenger.of(context).showSnackBar(
@@ -72,6 +81,9 @@ class ExpenseListFab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = isCompact ? 24.0 : 28.0;
+    final borderRadius = isCompact ? 10.0 : 12.0;
+
     return InkWell(
       onTap: () {
         showModalBottomSheet(
@@ -117,7 +129,6 @@ class ExpenseListFab extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              // Tozalash tugmasi
                               IconButton(
                                 onPressed: () =>
                                     _showDeleteConfirmationDialog(context),
@@ -309,11 +320,11 @@ class ExpenseListFab extends StatelessWidget {
         );
       },
       child: Container(
-        height: 60,
-        width: 68,
+        height: height,
+        width: width,
         decoration: BoxDecoration(
           color: Colors.blue.shade600,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(borderRadius),
           boxShadow: [
             BoxShadow(
               color: Colors.blue.withOpacity(0.4),
@@ -322,7 +333,7 @@ class ExpenseListFab extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(Icons.history, size: 28, color: Colors.white),
+        child: Icon(Icons.history, size: iconSize, color: Colors.white),
       ),
     );
   }

@@ -35,11 +35,35 @@ class BudgetDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final bool isSmallScreen = constraints.maxHeight < 400;
+        // Ekran balandligiga qarab o'lchamlarni aniqlash
+        final availableHeight = constraints.maxHeight;
+        final isVeryCompact = availableHeight < 200;
+        final isCompact = availableHeight >= 200 && availableHeight < 280;
+
+        // Font o'lchamlari
+        final titleFontSize = isVeryCompact ? 12.0 : (isCompact ? 14.0 : 16.0);
+        final budgetFontSize = isVeryCompact ? 22.0 : (isCompact ? 26.0 : 32.0);
+        final labelFontSize = isVeryCompact ? 12.0 : (isCompact ? 14.0 : 16.0);
+        final remainingFontSize = isVeryCompact
+            ? 14.0
+            : (isCompact ? 16.0 : 20.0);
+        final displayValueFontSize = isVeryCompact
+            ? 32.0
+            : (isCompact ? 40.0 : 48.0);
+
+        // Padding va spacing
+        final horizontalPadding = isVeryCompact
+            ? 12.0
+            : (isCompact ? 16.0 : 24.0);
+        final verticalSpacing = isVeryCompact ? 8.0 : (isCompact ? 12.0 : 16.0);
+        final cardPadding = isVeryCompact ? 10.0 : (isCompact ? 12.0 : 14.0);
+
+        // Border radius
+        final borderRadius = isVeryCompact ? 12.0 : (isCompact ? 14.0 : 16.0);
 
         return Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -53,8 +77,26 @@ class BudgetDisplay extends StatelessWidget {
               crossFadeState: isEditingBudget
                   ? CrossFadeState.showSecond
                   : CrossFadeState.showFirst,
-              firstChild: _buildNormalMode(isSmallScreen, context),
-              secondChild: _buildEditMode(isSmallScreen),
+              firstChild: _buildNormalMode(
+                context,
+                titleFontSize,
+                budgetFontSize,
+                labelFontSize,
+                remainingFontSize,
+                displayValueFontSize,
+                verticalSpacing,
+                cardPadding,
+                borderRadius,
+                isVeryCompact,
+              ),
+              secondChild: _buildEditMode(
+                titleFontSize,
+                budgetFontSize,
+                displayValueFontSize,
+                cardPadding,
+                borderRadius,
+                isVeryCompact,
+              ),
               layoutBuilder: (topChild, topKey, bottomChild, bottomKey) {
                 return Stack(
                   alignment: Alignment.center,
@@ -72,11 +114,22 @@ class BudgetDisplay extends StatelessWidget {
   }
 
   // NORMAL REJIM
-  Widget _buildNormalMode(bool isSmallScreen, BuildContext context) {
+  Widget _buildNormalMode(
+    BuildContext context,
+    double titleFontSize,
+    double budgetFontSize,
+    double labelFontSize,
+    double remainingFontSize,
+    double displayValueFontSize,
+    double verticalSpacing,
+    double cardPadding,
+    double borderRadius,
+    bool isVeryCompact,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Oylik byudjet + edit
+        // Oylik byudjet + edit + settings
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -88,16 +141,16 @@ class BudgetDisplay extends StatelessWidget {
                     'Oylik byudjet',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
-                      fontSize: isSmallScreen ? 14 : 16,
+                      fontSize: titleFontSize,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: isVeryCompact ? 2 : 6),
                   Text(
                     '${_formatCurrency(budget.totalBudget)} so\'m',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: isSmallScreen ? 26 : 32,
+                      fontSize: budgetFontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -105,7 +158,7 @@ class BudgetDisplay extends StatelessWidget {
                 ],
               ),
             ),
-            _buildEditButton(isSmallScreen, Icons.edit),
+            _buildEditButton(Icons.edit, isVeryCompact),
             IconButton(
               onPressed: () {
                 Navigator.push(
@@ -113,19 +166,24 @@ class BudgetDisplay extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => const SettingsPage()),
                 );
               },
-              icon: Icon(Icons.settings, color: Colors.white),
+              icon: Icon(
+                Icons.settings,
+                color: Colors.white,
+                size: isVeryCompact ? 20 : 24,
+              ),
+              padding: EdgeInsets.all(isVeryCompact ? 4 : 8),
             ),
           ],
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: verticalSpacing),
 
         // Qoldiq
         Container(
-          padding: const EdgeInsets.all(14),
+          padding: EdgeInsets.all(cardPadding),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -134,15 +192,18 @@ class BudgetDisplay extends StatelessWidget {
                 'Qoldiq',
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.9),
-                  fontSize: isSmallScreen ? 14 : 16,
+                  fontSize: labelFontSize,
                 ),
               ),
-              Text(
-                '${_formatCurrency(budget.remainingBudget)} so\'m',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: isSmallScreen ? 16 : 20,
-                  fontWeight: FontWeight.bold,
+              Flexible(
+                child: Text(
+                  '${_formatCurrency(budget.remainingBudget)} so\'m',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: remainingFontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -151,48 +212,69 @@ class BudgetDisplay extends StatelessWidget {
 
         const Spacer(),
 
-        // Izoh
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Izoh',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                controller: descriptionController,
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-                decoration: InputDecoration(
-                  hintText: 'Nimaga sarflandi?',
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                  border: InputBorder.none,
-                  isDense: true,
+        // Izoh - faqat katta ekranlarda to'liq ko'rinadi
+        if (!isVeryCompact) ...[
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Izoh',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: labelFontSize * 0.875,
                 ),
-                onChanged: onDescriptionChanged,
               ),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
+              SizedBox(height: verticalSpacing * 0.5),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: cardPadding,
+                  vertical: cardPadding * 0.3,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(borderRadius * 0.75),
+                ),
+                child: TextField(
+                  controller: descriptionController,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: labelFontSize,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Nimaga sarflandi?',
+                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                    border: InputBorder.none,
+                    isDense: true,
+                  ),
+                  onChanged: onDescriptionChanged,
+                ),
+              ),
+              SizedBox(height: verticalSpacing),
+            ],
+          ),
+        ],
 
         // Summa kartasi
-        _buildValueCard(isSmallScreen, 'Summa'),
+        _buildValueCard(
+          'Summa',
+          displayValueFontSize,
+          labelFontSize,
+          cardPadding,
+          borderRadius,
+        ),
       ],
     );
   }
 
-  // EDIT REJIM — MARKAZDA KATTA KARTA
-  Widget _buildEditMode(bool isSmallScreen) {
+  // EDIT REJIM
+  Widget _buildEditMode(
+    double titleFontSize,
+    double budgetFontSize,
+    double displayValueFontSize,
+    double cardPadding,
+    double borderRadius,
+    bool isVeryCompact,
+  ) {
     return Column(
       children: [
         // Oylik byudjet + close
@@ -207,16 +289,16 @@ class BudgetDisplay extends StatelessWidget {
                     'Oylik byudjet',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
-                      fontSize: isSmallScreen ? 14 : 16,
+                      fontSize: titleFontSize,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: isVeryCompact ? 2 : 6),
                   Text(
                     '${_formatCurrency(budget.totalBudget)} so\'m',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: isSmallScreen ? 26 : 32,
+                      fontSize: budgetFontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -224,21 +306,22 @@ class BudgetDisplay extends StatelessWidget {
                 ],
               ),
             ),
-            _buildEditButton(isSmallScreen, Icons.close),
+            _buildEditButton(Icons.close, isVeryCompact),
           ],
         ),
 
-        const Spacer(), // Katta kartani markazga suradi
+        const Spacer(),
+
         // KATTA YANGI BYUDJET KARTASI
         AnimatedScale(
           scale: 1.0,
           duration: const Duration(milliseconds: 300),
           child: Container(
             width: double.infinity,
-            padding: EdgeInsets.all(isSmallScreen ? 20 : 32),
+            padding: EdgeInsets.all(cardPadding * 1.5),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(borderRadius * 1.5),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.15),
@@ -254,18 +337,18 @@ class BudgetDisplay extends StatelessWidget {
                   'Yangi byudjet',
                   style: TextStyle(
                     color: Colors.grey.shade600,
-                    fontSize: isSmallScreen ? 14 : 16,
+                    fontSize: titleFontSize,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: isVeryCompact ? 4 : 8),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
                     '$displayValue so\'m',
                     style: TextStyle(
                       color: Colors.blue.shade800,
-                      fontSize: isSmallScreen ? 40 : 48,
+                      fontSize: displayValueFontSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -281,7 +364,7 @@ class BudgetDisplay extends StatelessWidget {
   }
 
   // Tugma (edit/close)
-  Widget _buildEditButton(bool isSmallScreen, IconData icon) {
+  Widget _buildEditButton(IconData icon, bool isVeryCompact) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       transitionBuilder: (child, animation) =>
@@ -290,19 +373,26 @@ class BudgetDisplay extends StatelessWidget {
         key: ValueKey(icon),
         onPressed: onEditBudget,
         icon: Icon(icon, color: Colors.white),
-        iconSize: isSmallScreen ? 24 : 28,
+        iconSize: isVeryCompact ? 20 : 24,
+        padding: EdgeInsets.all(isVeryCompact ? 4 : 8),
       ),
     );
   }
 
   // Summa kartasi (normal rejim)
-  Widget _buildValueCard(bool isSmallScreen, String label) {
+  Widget _buildValueCard(
+    String label,
+    double displayValueFontSize,
+    double labelFontSize,
+    double cardPadding,
+    double borderRadius,
+  ) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(isSmallScreen ? 12 : 20),
+      padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -318,7 +408,7 @@ class BudgetDisplay extends StatelessWidget {
             label,
             style: TextStyle(
               color: Colors.grey.shade600,
-              fontSize: isSmallScreen ? 12 : 14,
+              fontSize: labelFontSize * 0.875,
             ),
           ),
           const SizedBox(height: 4),
@@ -328,7 +418,7 @@ class BudgetDisplay extends StatelessWidget {
               '$displayValue so\'m',
               style: TextStyle(
                 color: Colors.blue.shade800,
-                fontSize: isSmallScreen ? 28 : 36,
+                fontSize: displayValueFontSize * 0.75,
                 fontWeight: FontWeight.bold,
               ),
             ),

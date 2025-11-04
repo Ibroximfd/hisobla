@@ -6,6 +6,7 @@ class AdsHelper {
     if (Platform.isAndroid) {
       // Test ID - ishlab chiqishda
       return 'ca-app-pub-9217530480544704/5060118549';
+      // Real ID - chiqarganda o'zgartiring
       // return 'ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY';
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/2934735716';
@@ -17,6 +18,7 @@ class AdsHelper {
     if (Platform.isAndroid) {
       // Test ID - ishlab chiqishda
       return 'ca-app-pub-9217530480544704/7592403807';
+      // Real ID - chiqarganda o'zgartiring
       // return 'ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZZZZ';
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/4411468910';
