@@ -7,6 +7,7 @@ abstract class BudgetLocalDataSource {
   Future<void> setBudget(double amount);
   Future<void> addExpense(double amount, String description);
   Future<List<ExpenseModel>> getExpenses();
+  Future<void> deleteAllExpenses();
 }
 
 class BudgetLocalDataSourceImpl implements BudgetLocalDataSource {
@@ -86,5 +87,20 @@ class BudgetLocalDataSourceImpl implements BudgetLocalDataSource {
 
     result.sort((a, b) => b.date.compareTo(a.date));
     return result;
+  }
+
+  @override
+  Future<void> deleteAllExpenses() async {
+    // Barcha xarajatlarni o'chirish
+    await prefs.remove(_expensesKey);
+
+    // Byudjetni asl holatiga qaytarish
+    final budget = await getBudget();
+    final resetBudget = BudgetModel.create(
+      totalBudget: budget.totalBudget,
+      remainingBudget:
+          budget.totalBudget, // Qoldiqni to'liq byudjetga teng qilish
+    );
+    await prefs.setString(_budgetKey, jsonEncode(resetBudget.toJson()));
   }
 }

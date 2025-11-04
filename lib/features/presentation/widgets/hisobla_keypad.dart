@@ -38,7 +38,6 @@ class CalculatorKeypad extends StatelessWidget {
           const SizedBox(height: 12),
           // TAYYOR - Katta, markaziy
           _buildDoneButton(),
-          SizedBox(height: 40),
         ],
       ),
     );

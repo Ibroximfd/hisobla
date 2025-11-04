@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hisobla/features/presentation/blocs/hisobla_bloc/hisobla_bloc.dart';
+import 'package:hisobla/features/presentation/blocs/hisobla_bloc/hisobla_event.dart';
 import 'package:hisobla/features/presentation/blocs/hisobla_bloc/hisobla_state.dart';
 import 'package:intl/intl.dart';
 
@@ -14,6 +15,59 @@ class ExpenseListFab extends StatelessWidget {
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]} ',
         );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
+            const SizedBox(width: 12),
+            const Text('Ishonchingiz komilmi?'),
+          ],
+        ),
+        content: const Text(
+          'Barcha xarajatlar tarixi o\'chiriladi va byudjet qoldig\'i asl holatiga qaytariladi.\n\n'
+          'Bu amalni bekor qilib bo\'lmaydi!',
+          style: TextStyle(fontSize: 15, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(
+              'Bekor qilish',
+              style: TextStyle(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext); // Dialog yopish
+              Navigator.pop(context); // Bottom sheet yopish
+              context.read<BudgetBloc>().add(DeleteAllExpensesEvent());
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Barcha xarajatlar o\'chirildi'),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Ha, o\'chirish'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -61,9 +115,21 @@ class ExpenseListFab extends StatelessWidget {
                               color: Colors.grey.shade800,
                             ),
                           ),
-                          IconButton(
-                            onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.close),
+                          Row(
+                            children: [
+                              // Tozalash tugmasi
+                              IconButton(
+                                onPressed: () =>
+                                    _showDeleteConfirmationDialog(context),
+                                icon: const Icon(Icons.delete_sweep),
+                                color: Colors.red,
+                                tooltip: 'Barchasini o\'chirish',
+                              ),
+                              IconButton(
+                                onPressed: () => Navigator.pop(context),
+                                icon: const Icon(Icons.close),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -256,7 +322,7 @@ class ExpenseListFab extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(Icons.history, size: 28),
+        child: const Icon(Icons.history, size: 28, color: Colors.white),
       ),
     );
   }

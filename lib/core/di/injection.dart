@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:hisobla/features/domain/usecases/delete_all_expense_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hisobla/features/data/datasources/hisobla_datasource.dart';
 import 'package:hisobla/features/data/repositories/hisobla_repo_impl.dart';
@@ -29,6 +30,7 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton(() => SetBudgetUseCase(getIt()));
   getIt.registerLazySingleton(() => AddExpenseUseCase(getIt()));
   getIt.registerLazySingleton(() => GetExpensesUseCase(getIt()));
+  getIt.registerLazySingleton(() => DeleteAllExpensesUseCase(getIt()));
 
   // Bloc
   getIt.registerFactory(
@@ -37,6 +39,7 @@ Future<void> setupDependencies() async {
       setBudget: getIt(),
       addExpense: getIt(),
       getExpenses: getIt(),
+      deleteAllExpenses: getIt(),
     ),
   );
 }

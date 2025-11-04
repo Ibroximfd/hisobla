@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hisobla/features/domain/usecases/add_expense_usecase.dart';
+import 'package:hisobla/features/domain/usecases/delete_all_expense_usecase.dart';
 import 'package:hisobla/features/domain/usecases/get_budget_usecase.dart';
 import 'package:hisobla/features/domain/usecases/get_expense_usecase.dart';
 import 'package:hisobla/features/domain/usecases/set_budget_usecase.dart';
@@ -11,16 +12,19 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
   final SetBudgetUseCase setBudget;
   final AddExpenseUseCase addExpense;
   final GetExpensesUseCase getExpenses;
+  final DeleteAllExpensesUseCase deleteAllExpenses;
 
   BudgetBloc({
     required this.getBudget,
     required this.setBudget,
     required this.addExpense,
     required this.getExpenses,
+    required this.deleteAllExpenses,
   }) : super(BudgetInitial()) {
     on<LoadBudgetEvent>(_onLoadBudget);
     on<SetBudgetEvent>(_onSetBudget);
     on<AddExpenseEvent>(_onAddExpense);
+    on<DeleteAllExpensesEvent>(_onDeleteAllExpenses);
   }
 
   Future<void> _onLoadBudget(
@@ -55,6 +59,18 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
   ) async {
     try {
       await addExpense(event.amount, event.description);
+      add(LoadBudgetEvent());
+    } catch (e) {
+      emit(BudgetError(e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteAllExpenses(
+    DeleteAllExpensesEvent event,
+    Emitter<BudgetState> emit,
+  ) async {
+    try {
+      await deleteAllExpenses();
       add(LoadBudgetEvent());
     } catch (e) {
       emit(BudgetError(e.toString()));

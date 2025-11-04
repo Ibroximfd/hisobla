@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hisobla/core/ads/ads_helper.dart';
 import 'package:hisobla/features/presentation/blocs/hisobla_bloc/hisobla_bloc.dart';
 import 'package:hisobla/features/presentation/blocs/hisobla_bloc/hisobla_event.dart';
 import 'package:hisobla/features/presentation/blocs/hisobla_bloc/hisobla_state.dart';
@@ -19,6 +21,10 @@ class _CalculatorPageState extends State<CalculatorPage> {
   bool _isEditingBudget = false;
   final TextEditingController _descriptionController = TextEditingController();
 
+  // Banner Ad
+  BannerAd? _bannerAd;
+  bool _isBannerAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +33,30 @@ class _CalculatorPageState extends State<CalculatorPage> {
         _description = _descriptionController.text;
       });
     });
+
+    // Banner reklama yuklash
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: AdsHelper.bannerAdUnitId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          _isBannerAdLoaded = false;
+        },
+      ),
+    );
+
+    _bannerAd!.load();
   }
 
   void _onNumberPressed(String number) {
@@ -71,6 +101,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
         context,
       ).showSnackBar(const SnackBar(content: Text('Xarajat qo\'shildi')));
     }
+
+    // Ads counter increment
+    AdsManager().incrementActionCounter();
 
     _onClearPressed();
   }
@@ -128,6 +161,14 @@ class _CalculatorPageState extends State<CalculatorPage> {
                     onDonePressed: _onDonePressed,
                   ),
                 ),
+                // Banner Reklama
+                if (_isBannerAdLoaded && _bannerAd != null)
+                  Container(
+                    color: Colors.white,
+                    height: _bannerAd!.size.height.toDouble(),
+                    width: _bannerAd!.size.width.toDouble(),
+                    child: AdWidget(ad: _bannerAd!),
+                  ),
               ],
             );
           }
@@ -141,6 +182,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   @override
   void dispose() {
     _descriptionController.dispose();
+    _bannerAd?.dispose();
     super.dispose();
   }
 }

@@ -24,3 +24,5 @@ class AddExpenseEvent extends BudgetEvent {
   @override
   List<Object?> get props => [amount, description];
 }
+
+class DeleteAllExpensesEvent extends BudgetEvent {}

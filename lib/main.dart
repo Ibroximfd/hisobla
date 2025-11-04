@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hisobla/core/ads/ads_helper.dart';
 import 'package:hisobla/features/presentation/blocs/hisobla_bloc/hisobla_event.dart';
 import 'package:hisobla/features/presentation/pages/settings_page.dart';
 import 'package:hisobla/features/presentation/pages/splash_page.dart';
@@ -13,13 +14,16 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Status bar shaffof
-      statusBarIconBrightness: Brightness.light, // Iconlar oq (chunki fon ko‘k)
+      statusBarIconBrightness: Brightness.light, // Iconlar oq (chunki fon ko'k)
       statusBarBrightness: Brightness.dark, // iOS uchun
     ),
   );
 
   // SharedPreferences bilan DI setup
   await setupDependencies();
+
+  // Google Mobile Ads initialization
+  await AdsManager().initialize();
 
   runApp(const MyApp());
 }

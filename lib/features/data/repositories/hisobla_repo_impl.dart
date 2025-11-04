@@ -32,4 +32,9 @@ class BudgetRepositoryImpl implements BudgetRepository {
     final models = await localDataSource.getExpenses();
     return models.map((model) => model.toEntity()).toList();
   }
+
+  @override
+  Future<void> deleteAllExpenses() async {
+    await localDataSource.deleteAllExpenses();
+  }
 }

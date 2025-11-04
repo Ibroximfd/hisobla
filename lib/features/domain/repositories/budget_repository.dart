@@ -6,4 +6,5 @@ abstract class BudgetRepository {
   Future<void> setBudget(double amount);
   Future<void> addExpense(double amount, String description);
   Future<List<Expense>> getExpenses();
+  Future<void> deleteAllExpenses();
 }
