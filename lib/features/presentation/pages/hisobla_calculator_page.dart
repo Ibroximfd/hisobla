@@ -158,6 +158,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color(0xFFF5F5F5),
       body: BlocBuilder<BudgetBloc, BudgetState>(
         builder: (context, state) {
@@ -201,13 +202,14 @@ class _CalculatorPageState extends State<CalculatorPage> {
                   ),
                 ),
                 // Banner Reklama - faqat kerak bo'lganda ko'rinadi
-                if (_isBannerAdLoaded && _bannerAd != null)
-                  Container(
-                    color: Colors.white,
-                    height: bannerHeight,
-                    width: double.infinity,
-                    child: AdWidget(ad: _bannerAd!),
-                  ),
+                (_isBannerAdLoaded && _bannerAd != null)
+                    ? Container(
+                        color: Colors.white,
+                        height: bannerHeight,
+                        width: double.infinity,
+                        child: AdWidget(ad: _bannerAd!),
+                      )
+                    : SizedBox(height: 20),
               ],
             );
           }
