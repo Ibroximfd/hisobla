@@ -1,49 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:hisobla/features/presentation/pages/analysis_page.dart';
+import 'package:hisobla/features/presentation/pages/analysis_history_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
-  // Telegram kanaliga o'tish
-  Future<void> _openTelegramChannel() async {
+  Future<void> _openTelegramChannel(BuildContext context) async {
     final url = Uri.parse('https://t.me/only_flutter');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      _showSnackBar('Telegram kanalini ochib bo‘lmadi');
+      _showSnackBar(context, 'Telegram kanalini ochib bo\'lmadi');
     }
   }
 
-  // Email yuborish
-  Future<void> _sendEmail() async {
+  Future<void> _sendEmail(BuildContext context) async {
     final Uri emailUri = Uri(
       scheme: 'mailto',
       path: 'asdibroxim@gmail.com',
       queryParameters: {'subject': 'Hisobla ilovasi haqida'},
     );
     if (!await launchUrl(emailUri)) {
-      _showSnackBar('Email ilovasini ochib bo‘lmadi');
+      _showSnackBar(context, 'Email ilovasini ochib bo\'lmadi');
     }
   }
 
-  // Ilovani ulashish
   void _shareApp() {
     Share.share(
       'Hisobla – oson byudjet boshqaruvi ilovasi!\n'
       'Play Market: https://play.google.com/store/apps/details?id=uz.ibroxim_ku.hisobla\n'
       'Flutter bilan yaratilgan, tez va qulay!',
-      subject: 'Hisobla ilovasini sinab ko‘ring!',
+      subject: 'Hisobla ilovasini sinab ko\'ring!',
     );
   }
 
-  // Maxfiylik siyosati sahifasiga o'tish
   void _openPrivacyPolicy(BuildContext context) {
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => const PrivacyPolicyPage()));
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red.shade600,
@@ -84,47 +82,113 @@ class SettingsPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           _buildDeveloperCard(context, cardColor),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
+
+          // AI Tahlillar bo'limi
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              'AI Tahlillar',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade600,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+
+          _buildActionCard(
+            context,
+            icon: Icons.analytics,
+            color: Colors.purple,
+            title: 'Kunlik tahlil',
+            subtitle: 'Bugungi xarajatlar tahlili',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AnalysisPage()),
+              );
+            },
+            cardColor: cardColor,
+          ),
+          const SizedBox(height: 12),
+
+          _buildActionCard(
+            context,
+            icon: Icons.history,
+            color: Colors.indigo,
+            title: 'AI Tahlillar tarixi',
+            subtitle: 'Barcha tahlillarni ko\'rish va qidirish',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AnalysisHistoryPage()),
+              );
+            },
+            cardColor: cardColor,
+          ),
+          const SizedBox(height: 24),
+
+          // Boshqalar bo'limi
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              'Boshqalar',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade600,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+
           _buildActionCard(
             context,
             icon: Icons.telegram,
             color: const Color(0xFF0088CC),
             title: 'Flutter yangiliklari',
-            subtitle: '@only_flutter – eng so‘nggi Flutter yangiliklari',
-            onTap: _openTelegramChannel,
+            subtitle: '@only_flutter – eng so\'nggi yangiliklar',
+            onTap: () => _openTelegramChannel(context),
             cardColor: cardColor,
           ),
           const SizedBox(height: 12),
+
           _buildActionCard(
             context,
             icon: Icons.email,
             color: Colors.green,
-            title: 'Bog‘lanish',
+            title: 'Bog\'lanish',
             subtitle: 'asdibroxim@gmail.com',
-            onTap: _sendEmail,
+            onTap: () => _sendEmail(context),
             cardColor: cardColor,
           ),
           const SizedBox(height: 12),
+
           _buildActionCard(
             context,
             icon: Icons.share,
             color: Colors.orange,
             title: 'Ilovani ulashish',
-            subtitle: 'Do‘stlaringizga tavsiya qiling',
+            subtitle: 'Do\'stlaringizga tavsiya qiling',
             onTap: _shareApp,
             cardColor: cardColor,
           ),
           const SizedBox(height: 12),
+
           _buildActionCard(
             context,
             icon: Icons.privacy_tip,
             color: Colors.purple,
             title: 'Maxfiylik siyosati',
-            subtitle: 'Ma’lumotlar qanday himoyalanadi',
+            subtitle: 'Ma\'lumotlar qanday himoyalanadi',
             onTap: () => _openPrivacyPolicy(context),
             cardColor: cardColor,
           ),
+
           const SizedBox(height: 32),
+
           Center(
             child: Column(
               children: [
@@ -144,6 +208,7 @@ class SettingsPage extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -304,10 +369,10 @@ class SettingsPage extends StatelessWidget {
         content: const Text(
           'Salom! Men Ibroxim Umaraliyev – Flutter developer.\n\n'
           'Bu ilova sizga oylik byudjetingizni oson boshqarishga yordam beradi.\n\n'
-          'Flutter yangiliklaridan boxabar bo‘lish uchun @only_flutter kanaliga obuna bo‘ling!\n\n'
+          'Flutter yangiliklaridan boxabar bo\'lish uchun @only_flutter kanaliga obuna bo\'ling!\n\n'
           'Fikr va takliflaringizni asdibroxim@gmail.com ga yuboring.\n\n'
           'Rahmat ilovamizdan foydalanganingiz uchun!',
-          style: TextStyle(fontSize: 15),
+          style: TextStyle(fontSize: 15, height: 1.5),
         ),
         actions: [
           TextButton(
@@ -319,8 +384,6 @@ class SettingsPage extends StatelessWidget {
     );
   }
 }
-
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
@@ -361,55 +424,22 @@ class PrivacyPolicyPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             _PolicySection(
-              title: '1. Yig‘iladigan ma’lumotlar',
+              title: '1. Yig\'iladigan ma\'lumotlar',
               content:
-                  'Hisobla ilovasi foydalanuvchidan hech qanday shaxsiy ma’lumot, joylashuv, kontaktlar yoki hisob ma’lumotlarini yig‘maydi. '
-                  'Barcha byudjet va xarajatlar ma’lumotlari faqat sizning qurilmangizda, lokal xotirada saqlanadi. '
-                  'Ular hech qayerga yuborilmaydi, uzatilmaydi va serverda saqlanmaydi.',
+                  'Hisobla ilovasi foydalanuvchidan hech qanday shaxsiy ma\'lumot yig\'maydi. '
+                  'Barcha ma\'lumotlar faqat qurilmangizda saqlanadi.',
             ),
             _PolicySection(
-              title: '2. Ma’lumotlardan foydalanish',
+              title: '2. AI Tahlil',
               content:
-                  'Ilova faqat foydalanuvchining oylik byudjetini hisoblash va xarajatlarni nazorat qilish maqsadida ma’lumotlardan foydalanadi. '
-                  'Ma’lumotlaringiz hech qanday uchinchi tomon bilan bo‘lishilmaydi. '
-                  'Biz reklama, tahlil yoki kuzatuv tizimlaridan foydalanmaymiz.',
+                  'Xarajatlar tahlili uchun Google Gemini AI dan foydalanamiz. '
+                  'Faqat xarajat summasi va tavsifi yuboriladi, shaxsiy ma\'lumotlar yuborilmaydi.',
             ),
             _PolicySection(
-              title: '3. Ruxsatlar (Permissions)',
+              title: '3. Tahlillar tarixi',
               content:
-                  'Ilova faqat zarur bo‘lgan hollarda quyidagi ruxsatlardan foydalanishi mumkin:\n\n'
-                  '• Xotira (Storage) – ma’lumotlarni lokal saqlash uchun;\n'
-                  '• Internet – faqat havolalarni (masalan, Telegram kanal yoki email) ochish uchun.\n\n'
-                  'Ushbu ruxsatlar foydalanuvchi roziligi bilan faollashtiriladi va istalgan payt o‘chirib qo‘yish mumkin.',
-            ),
-            _PolicySection(
-              title: '4. Xavfsizlik',
-              content:
-                  'Ilovada saqlanadigan barcha ma’lumotlar qurilmangizda qoladi. '
-                  'Biz foydalanuvchi ma’lumotlarini uchinchi shaxslarga uzatmaymiz. '
-                  'Ilovani o‘chirganingizda barcha saqlangan ma’lumotlar avtomatik ravishda yo‘qoladi.',
-            ),
-            _PolicySection(
-              title: '5. Yosh chegarasi',
-              content:
-                  'Hisobla ilovasi 13 yoshdan katta foydalanuvchilar uchun mo‘ljallangan. '
-                  'Agar siz 13 yoshdan kichik bo‘lsangiz, ilovadan ota-ona yoki vasiy nazoratisiz foydalanmang.',
-            ),
-            _PolicySection(
-              title: '6. O‘zgarishlar',
-              content:
-                  'Maxfiylik siyosati vaqti-vaqti bilan yangilanib turadi. '
-                  'Yangi versiyalar bu sahifada e’lon qilinadi. '
-                  'Oxirgi yangilanish sanasi sahifaning yuqorisida ko‘rsatilgan.',
-            ),
-            _PolicySection(
-              title: '7. Aloqa',
-              content:
-                  'Agar sizda maxfiylik siyosati bo‘yicha savollar, takliflar yoki shikoyatlar bo‘lsa, '
-                  'biz bilan quyidagi manzil orqali bog‘laning:\n\n'
-                  '📧 Email: asdibroxim@gmail.com\n\n'
-                  'Biz foydalanuvchilarning fikrlarini qadrlaymiz va ilovani yanada xavfsiz qilishga harakat qilamiz.\n\n'
-                  'Rahmat, Hisobla ilovasidan foydalanganingiz uchun!',
+                  'AI tahlillari qurilmangizda local saqlanadi. '
+                  'Siz istalgan vaqt tahlillarni ko\'rish, qidirish yoki o\'chirish huquqiga egasiz.',
             ),
           ],
         ),
