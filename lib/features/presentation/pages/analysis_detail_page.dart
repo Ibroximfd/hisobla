@@ -2,6 +2,77 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
+// AnimatedTypewriter widgetini shu faylga qo'shamiz
+class AnimatedTypewriter extends StatefulWidget {
+  final String text;
+  final TextStyle? style;
+  final Duration duration;
+  final Duration delay;
+
+  const AnimatedTypewriter({
+    super.key,
+    required this.text,
+    this.style,
+    this.duration = const Duration(milliseconds: 30),
+    this.delay = const Duration(milliseconds: 0),
+  });
+
+  @override
+  State<AnimatedTypewriter> createState() => _AnimatedTypewriterState();
+}
+
+class _AnimatedTypewriterState extends State<AnimatedTypewriter>
+    with SingleTickerProviderStateMixin {
+  String _displayedText = '';
+  int _currentIndex = 0;
+  bool _isAnimating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startAnimation();
+  }
+
+  @override
+  void didUpdateWidget(AnimatedTypewriter oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text) {
+      _currentIndex = 0;
+      _displayedText = '';
+      _startAnimation();
+    }
+  }
+
+  Future<void> _startAnimation() async {
+    await Future.delayed(widget.delay);
+    if (!mounted) return;
+
+    setState(() => _isAnimating = true);
+
+    while (_currentIndex < widget.text.length && mounted) {
+      await Future.delayed(widget.duration);
+      if (!mounted) break;
+
+      setState(() {
+        _currentIndex++;
+        _displayedText = widget.text.substring(0, _currentIndex);
+      });
+    }
+
+    if (mounted) {
+      setState(() => _isAnimating = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _displayedText + (_isAnimating ? '▊' : ''),
+      style: widget.style,
+    );
+  }
+}
+
 class AnalysisDetailPage extends StatelessWidget {
   final Map<String, dynamic> analysis;
 
@@ -152,13 +223,15 @@ class AnalysisDetailPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  analysis['summary'] ?? '',
+                AnimatedTypewriter(
+                  text: analysis['summary'] ?? '',
                   style: TextStyle(
                     fontSize: 15,
                     color: Colors.white.withOpacity(0.95),
                     height: 1.3,
                   ),
+                  duration: const Duration(milliseconds: 20),
+                  delay: const Duration(milliseconds: 300),
                 ),
               ],
             ),
@@ -310,7 +383,9 @@ class AnalysisDetailPage extends StatelessWidget {
               ],
             ),
             const Divider(height: 24, thickness: 1),
-            ...unnecessaryExpenses.map((expense) {
+            ...unnecessaryExpenses.asMap().entries.map((entry) {
+              final expense = entry.value;
+              final index = entry.key;
               final description = expense['description'] ?? '';
               final amount = (expense['amount'] ?? 0).toDouble();
               final reason = expense['reason'] ?? '';
@@ -349,13 +424,15 @@ class AnalysisDetailPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      reason,
+                    AnimatedTypewriter(
+                      text: reason,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey.shade700,
                         height: 1.4,
                       ),
+                      duration: const Duration(milliseconds: 20),
+                      delay: Duration(milliseconds: 500 + (index * 300)),
                     ),
                   ],
                 ),
@@ -585,7 +662,10 @@ class AnalysisDetailPage extends StatelessWidget {
               ],
             ),
             const Divider(height: 24, thickness: 1),
-            ...reduceCategories.map((item) {
+            ...reduceCategories.asMap().entries.map((entry) {
+              final item = entry.value;
+              final index = entry.key;
+
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(16),
@@ -606,13 +686,15 @@ class AnalysisDetailPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      item['suggestion'] ?? '',
+                    AnimatedTypewriter(
+                      text: item['suggestion'] ?? '',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey.shade700,
                         height: 1.4,
                       ),
+                      duration: const Duration(milliseconds: 20),
+                      delay: Duration(milliseconds: 700 + (index * 400)),
                     ),
                   ],
                 ),
@@ -685,9 +767,11 @@ class AnalysisDetailPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                          e.value.toString(),
+                        child: AnimatedTypewriter(
+                          text: e.value.toString(),
                           style: const TextStyle(fontSize: 15, height: 1.5),
+                          duration: const Duration(milliseconds: 20),
+                          delay: Duration(milliseconds: 900 + (e.key * 500)),
                         ),
                       ),
                     ],
@@ -734,14 +818,16 @@ class AnalysisDetailPage extends StatelessWidget {
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              motivation,
+            child: AnimatedTypewriter(
+              text: motivation,
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
                 height: 1.5,
               ),
+              duration: const Duration(milliseconds: 25),
+              delay: const Duration(milliseconds: 1500),
             ),
           ),
         ],
