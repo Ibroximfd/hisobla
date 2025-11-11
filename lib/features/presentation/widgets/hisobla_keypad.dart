@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hisobla/features/presentation/widgets/hisobla_expense_fab.dart';
+import 'package:hisobla/features/presentation/widgets/voice_expense_button.dart';
 
 class CalculatorKeypad extends StatelessWidget {
   final Function(String) onNumberPressed;
@@ -167,9 +168,15 @@ class CalculatorKeypad extends StatelessWidget {
   ) {
     final fontSize = isVeryCompact ? 18.0 : 22.0;
     final borderRadius = isVeryCompact ? 20.0 : 24.0;
+    final voiceButtonWidth = isVeryCompact ? 56.0 : 68.0;
 
     return Row(
       children: [
+        VoiceExpenseButton(
+          height: height,
+          width: voiceButtonWidth,
+          isCompact: isVeryCompact,
+        ),
         Expanded(
           child: Container(
             width: double.infinity,
