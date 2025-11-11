@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hisobla/features/presentation/widgets/currency_converted_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:hisobla/features/presentation/pages/analysis_page.dart';
@@ -186,6 +187,25 @@ class SettingsPage extends StatelessWidget {
             onTap: () => _openPrivacyPolicy(context),
             cardColor: cardColor,
           ),
+
+          const SizedBox(height: 24),
+
+          // Valyuta kurslari bo'limi
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              'Valyuta kurslari',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade600,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+
+          CurrencyConverterCard(cardColor: cardColor),
+          const SizedBox(height: 24),
 
           const SizedBox(height: 32),
 

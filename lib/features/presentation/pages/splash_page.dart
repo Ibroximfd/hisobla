@@ -18,28 +18,28 @@ class _SplashPageState extends State<SplashPage>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 800), // 1500ms -> 800ms
       vsync: this,
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
+        curve: const Interval(0.0, 0.7, curve: Curves.easeIn),
       ),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
+        curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
       ),
     );
 
     _controller.forward();
 
-    // Navigate to main page after delay
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    // Tezroq o'tish - 800ms
+    Future.delayed(const Duration(milliseconds: 800), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
@@ -49,7 +49,7 @@ class _SplashPageState extends State<SplashPage>
                 (context, animation, secondaryAnimation, child) {
                   return FadeTransition(opacity: animation, child: child);
                 },
-            transitionDuration: const Duration(milliseconds: 500),
+            transitionDuration: const Duration(milliseconds: 300),
           ),
         );
       }
@@ -87,55 +87,43 @@ class _SplashPageState extends State<SplashPage>
                 children: [
                   // App Icon
                   Container(
-                    width: 120,
-                    height: 120,
+                    width: 100,
+                    height: 100,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
                     child: Icon(
                       Icons.calculate_rounded,
-                      size: 70,
+                      size: 60,
                       color: Colors.blue.shade700,
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 24),
                   // App Name
                   const Text(
                     'Hisobla',
                     style: TextStyle(
-                      fontSize: 48,
+                      fontSize: 42,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      letterSpacing: 2,
+                      letterSpacing: 1.5,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Text(
                     'Moliyangizni boshqaring',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       color: Colors.white.withOpacity(0.9),
                       fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  // Loading Indicator
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.white.withOpacity(0.7),
-                      ),
                     ),
                   ),
                 ],

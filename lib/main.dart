@@ -13,6 +13,7 @@ import 'features/presentation/blocs/hisobla_bloc/hisobla_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // System UI setup - async emas
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -21,19 +22,34 @@ void main() async {
     ),
   );
 
-  // Dependencies setup
+  // FAQAT zarur bo'lgan initialization
   await setupDependencies();
 
-  // Google Mobile Ads
-  await AdsManager().initialize();
-
+  // Locale initialization - tez
   await initializeDateFormatting('uz', null);
 
-  // Notification service
-  await NotificationService().initialize();
-  await NotificationService().scheduleDailyAnalysis();
-
   runApp(const MyApp());
+
+  // Background initialization - app ochilgandan keyin
+  _initializeBackgroundServices();
+}
+
+// Bu funksiya app ochilgandan KEYIN ishga tushadi
+Future<void> _initializeBackgroundServices() async {
+  // AdMob - background
+  AdsManager().initialize().catchError((e) {
+    debugPrint('❌ AdMob initialization error: $e');
+  });
+
+  // Notification - background
+  NotificationService()
+      .initialize()
+      .then((_) {
+        NotificationService().scheduleDailyAnalysis();
+      })
+      .catchError((e) {
+        debugPrint('❌ Notification initialization error: $e');
+      });
 }
 
 class MyApp extends StatefulWidget {
@@ -53,7 +69,10 @@ class _MyAppState extends State<MyApp> {
     // Notification bosilganda page ochish
     NotificationService.onNotificationTap = (String payload) {
       if (payload == 'daily_analysis') {
-        navigatorKey.currentState?.pushNamed('/analysis');
+        // Main page'dan Analysis page'ga o'tish
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(builder: (_) => const AnalysisPage()),
+        );
       }
     };
   }
@@ -71,7 +90,7 @@ class _MyAppState extends State<MyApp> {
           scaffoldBackgroundColor: const Color(0xFFF5F5F5),
         ),
         home: const SplashPage(),
-        routes: {'/analysis': (context) => const AnalysisPage()},
+        // Routes ni olib tashlash - Navigator.push ishlatamiz
       ),
     );
   }

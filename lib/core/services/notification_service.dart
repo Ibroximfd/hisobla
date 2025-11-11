@@ -14,81 +14,104 @@ class NotificationService {
   static Function(String)? onNotificationTap;
 
   Future<void> initialize() async {
-    // Timezone initialization
-    tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Asia/Tashkent'));
+    try {
+      // Timezone initialization
+      tz.initializeTimeZones();
+      tz.setLocalLocation(tz.getLocation('Asia/Tashkent'));
 
-    // Android settings
-    const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@drawable/ic_stat_notification');
+      // Android settings
+      const AndroidInitializationSettings androidSettings =
+          AndroidInitializationSettings('@drawable/ic_stat_notification');
 
-    // iOS settings
-    const DarwinInitializationSettings iosSettings =
-        DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true,
-        );
+      // iOS settings
+      const DarwinInitializationSettings iosSettings =
+          DarwinInitializationSettings(
+            requestAlertPermission: true,
+            requestBadgePermission: true,
+            requestSoundPermission: true,
+          );
 
-    const InitializationSettings settings = InitializationSettings(
-      android: androidSettings,
-      iOS: iosSettings,
-    );
+      const InitializationSettings settings = InitializationSettings(
+        android: androidSettings,
+        iOS: iosSettings,
+      );
 
-    // Initialize with callback
-    await _notifications.initialize(
-      settings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        if (response.payload != null) {
-          onNotificationTap?.call(response.payload!);
-        }
-      },
-    );
+      // Initialize with callback
+      await _notifications.initialize(
+        settings,
+        onDidReceiveNotificationResponse: (NotificationResponse response) {
+          print('📱 Notification tapped: ${response.payload}');
+          if (response.payload != null) {
+            // Callback chaqirish
+            onNotificationTap?.call(response.payload!);
+          }
+        },
+      );
 
-    // Request permissions for Android 13+
-    await _requestPermissions();
+      // Request permissions for Android 13+
+      await _requestPermissions();
+
+      print('✅ Notification service initialized');
+    } catch (e) {
+      print('❌ Notification initialization error: $e');
+    }
   }
 
   Future<void> _requestPermissions() async {
-    final AndroidFlutterLocalNotificationsPlugin? androidPlugin = _notifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
+    try {
+      final AndroidFlutterLocalNotificationsPlugin? androidPlugin =
+          _notifications
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >();
 
-    await androidPlugin?.requestNotificationsPermission();
+      final bool? granted = await androidPlugin
+          ?.requestNotificationsPermission();
+      print(
+        '📱 Notification permission: ${granted == true ? "Granted" : "Denied"}',
+      );
+    } catch (e) {
+      print('❌ Permission request error: $e');
+    }
   }
 
   // Har kuni soat 20:00 da notification schedule qilish
   Future<void> scheduleDailyAnalysis() async {
-    await _notifications.zonedSchedule(
-      0, // notification ID
-      '📊 Kunlik xarajatlar tahlili',
-      'Bugungi xarajatlaringizni ko\'ring va AI tavsiyalarini oling!',
-      _nextInstanceOf20PM(),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'daily_analysis_channel',
-          'Kunlik tahlil',
-          channelDescription: 'Har kuni xarajatlar tahlili',
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: '@drawable/ic_stat_notification',
-          styleInformation: BigTextStyleInformation(
-            'Bugungi xarajatlaringizni ko\'ring va AI tavsiyalarini oling!',
+    try {
+      await _notifications.zonedSchedule(
+        0, // notification ID
+        '📊 Kunlik xarajatlar tahlili',
+        'Bugungi xarajatlaringizni ko\'ring va AI tavsiyalarini oling!',
+        _nextInstanceOf20PM(),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'daily_analysis_channel',
+            'Kunlik tahlil',
+            channelDescription: 'Har kuni xarajatlar tahlili',
+            importance: Importance.high,
+            priority: Priority.high,
+            icon: '@drawable/ic_stat_notification',
+            styleInformation: BigTextStyleInformation(
+              'Bugungi xarajatlaringizni ko\'ring va AI tavsiyalarini oling!',
+            ),
+          ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
           ),
         ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
-      payload: 'daily_analysis',
-    );
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+        payload: 'daily_analysis',
+      );
+
+      print('✅ Daily notification scheduled for 20:00');
+    } catch (e) {
+      print('❌ Schedule notification error: $e');
+    }
   }
 
   // Keyingi 20:00 ni hisoblash
@@ -109,31 +132,12 @@ class NotificationService {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
 
+    print('📅 Next notification: $scheduledDate');
     return scheduledDate;
-  }
-
-  // Test uchun darhol notification ko'rsatish
-  Future<void> showTestNotification() async {
-    await _notifications.show(
-      999,
-      '📊 Test: Kunlik tahlil',
-      'Bu test notification. Bosing va tahlilni ko\'ring!',
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'daily_analysis_channel',
-          'Kunlik tahlil',
-          channelDescription: 'Har kuni xarajatlar tahlili',
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: '@drawable/ic_stat_notification',
-        ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      payload: 'daily_analysis',
-    );
   }
 
   Future<void> cancelAll() async {
     await _notifications.cancelAll();
+    print('🗑️ All notifications cancelled');
   }
 }
